@@ -1,0 +1,286 @@
+---
+title: "STAT 33A Workbook 7"
+date: "Oct 15, 2020"
+author: "CJ HINES (3034590053)"
+output: pdf_document
+---
+
+This workbook is due __Oct 15, 2020__ by 11:59pm PT.
+
+The workbook is organized into sections that correspond to the lecture videos
+for the week. Watch a video, then do the corresponding exercises _before_
+moving on to the next video.
+
+Workbooks are graded for completeness, so as long as you make a clear effort to
+solve each problem, you'll get full credit. That said, make sure you understand
+the concepts here, because they're likely to reappear in homeworks, quizzes,
+and later lectures.
+
+As you work, write your answers in this notebook. Answer questions with
+complete sentences, and put code in code chunks. You can make as many new code
+chunks as you like.
+
+In the notebook, you can run the line of code where the cursor is by pressing
+`Ctrl` + `Enter` on Windows or `Cmd` + `Enter` on Mac OS X. You can run an
+entire code chunk by clicking on the green arrow in the upper right corner of
+the code chunk. 
+
+Please do not delete the exercises already in this notebook, because it may
+interfere with our grading tools.
+
+You need to submit your work in two places:
+
+* Submit this Rmd file with your edits on bCourses.
+* Knit and submit the generated PDF file on Gradescope.
+
+If you have any last-minute trouble knitting, **DON'T PANIC**. Submit your Rmd
+file on time and follow up in office hours or on Piazza to sort out the PDF.
+
+
+dplyr Overview
+==============
+
+Watch the "dplyr Overview" lecture video.
+
+No exercises for this section.
+
+
+Subsets with dplyr
+==================
+
+Watch the "Subsets with dplyr" lecture video.
+
+## Exercise 1
+
+Use dplyr and the dogs data to compute each of the following subsets:
+
+1. Rows 10-30 only
+
+2. All rows except row 51
+
+3. All columns except `popularity_all` and `popularity`
+
+4. Rows 1-10 with only the `breed`, `weight`, and `height` columns
+
+You do not need to print out these subsets, just show us the code to compute
+them.
+
+**YOUR ANSWER GOES HERE:**
+```{r}
+library(dplyr)
+dogs = readRDS("dogs.rds")
+```
+
+1. Rows 10-30 only
+```{r}
+#slice(dogs, seq(10,30))
+tentothirty = slice(dogs, 10:30)
+```
+
+2. All rows except row 51
+```{r}
+no51 = slice(dogs, -51)
+```
+
+3. All columns except `popularity_all` and `popularity`
+```{r}
+nopop = select(dogs, -popularity_all, -popularity)
+```
+
+4. Rows 1-10 with only the `breed`, `weight`, and `height` columns
+```{r}
+dogsbwh = select(dogs, breed, weight, height)
+sldogsbwh = slice(dogsbwh, 1:10)
+```
+
+## Exercise 2
+
+Use dplyr to show that there are no duplicated rows in the dogs data.
+
+Explain your reasoning.
+
+**YOUR ANSWER GOES HERE:**
+```{r}
+howmany = nrow(dogs)
+distincthowmany = nrow(distinct(dogs))
+howmany == distincthowmany
+```
+
+`howmany` are the number of rows in dogs. `distincthowmany` are the number of distinct (or not duplicated) rows in dogs. The numbers are equal.
+
+
+Base R versus dplyr
+===================
+
+Watch the "Base R versus dplyr" lecture video.
+
+No exercises for this section.
+
+
+Transformations with dplyr
+==========================
+
+Watch the "Transformations with dplyr" lecture video.
+
+
+## Exercise 3
+
+Workbook 4, Exericse 6 asked you to use base R and the dogs data to compute:
+
+1. The mean and median of the longevity column (ignoring missing values).
+
+2. The subset that contains rows 10-20 of the height, weight, and longevity
+   columns.
+
+3. The number of dog breeds with weight greater than 42.
+
+4. The subset of large dogs that require daily grooming.
+
+For each of these, show the code to compute the result:
+
+1. Using base R
+2. Using dplyr
+
+
+**YOUR ANSWER GOES HERE:**
+
+**BASE R**
+
+1. The mean and median of the longevity column (ignoring missing values).
+```{r}
+mean(dogs$longevity, na.rm = TRUE)
+median(dogs$longevity, na.rm = TRUE)
+```
+
+2. The subset that contains rows 10-20 of the height, weight, and longevity columns.
+```{r}
+rh = dogs$height[10:20]
+rw = dogs$weight[10:20]
+rl = dogs$longevity[10:20]
+```
+
+3. The number of dog breeds with weight greater than 42.
+```{r}
+heavy = subset(dogs, weight > 42)
+length(heavy$breed)
+```
+
+4. The subset of large dogs that require daily grooming.
+```{r}
+biggroom = subset(dogs, size == "large" & grooming == "daily")
+```
+
+**DPLYR**
+
+1. The mean and median of the longevity column (ignoring missing values).
+```{r}
+summarize(dogs, mean(longevity, na.rm = TRUE))
+summarize(dogs, median(longevity, na.rm = TRUE))
+```
+
+2. The subset that contains rows 10-20 of the height, weight, and longevity columns.
+```{r}
+tentwenty = slice(dogs, 10:20)
+select(tentwenty, height, weight, longevity)
+```
+
+3. The number of dog breeds with weight greater than 42.
+```{r}
+count(filter(dogs, weight > 42))
+```
+
+4. The subset of large dogs that require daily grooming.
+```{r}
+filt = filter(dogs, size == "large", grooming == "daily")
+```
+
+
+## Exercise 4
+
+Use dplyr and the dogs data to determine which 3 dogs cost the most.
+
+Your answer to this exercise should be a data frame with 3 rows.
+
+**YOUR ANSWER GOES HERE:**
+```{r}
+dogs = readRDS("dogs.rds")
+filter(dogs, lifetime_cost > 25600)
+```
+
+
+## Exercise 5
+
+Use dplyr to answer each of the following:
+
+1. On average, which `group` of dog has the highest lifetime cost? Which has
+   the lowest?
+
+2. How many dogs are there for each possible combination of `size` and
+   `grooming`?
+
+3. For each `group` of dog, what's the shortest lifespan? You should have one
+   result per group here. For each `group` of dog, what's the longest lifespan?
+
+4. Do popular dogs tend to be more expensive? Use any columns that seem
+   appropriate; you can also use ggplot2 if you like.
+
+
+**YOUR ANSWER GOES HERE:**
+
+1. On average, which `group` of dog has the highest lifetime cost? Which has the lowest?
+On average, herding dogs have the highgest lifetime costs while working dogs have the lowest.
+```{r}
+bygroup = group_by(dogs, group)
+summarize(bygroup, mean(lifetime_cost, na.rm = TRUE))
+```
+
+2. How many dogs are there for each possible combination of `size` and `grooming`? 
+```{r}
+count(dogs, size, grooming)
+```
+
+3. For each `group` of dog, what's the shortest lifespan? You should have one
+   result per group here. For each `group` of dog, what's the longest lifespan?
+
+Shortest:
+```{r}
+summarize(bygroup, min(longevity, na.rm = TRUE))
+```
+
+Longest:
+```{r}
+summarize(bygroup, max(longevity, na.rm = TRUE))
+```
+
+4. Do popular dogs tend to be more expensive? Use any columns that seem
+   appropriate; you can also use ggplot2 if you like.
+   
+> No, popularity is not related to lifetime_cost.
+   
+```{r}
+library(ggplot2)
+ggplot(dogs, aes(popularity_all, lifetime_cost, color = group)) + geom_point()
+```
+
+
+The Pipe Operator
+=================
+
+Watch the "The Pipe Operator" lecture video.
+
+## Exercise 6
+
+Read the documentation for the pipe operator at
+<https://magrittr.tidyverse.org/reference/pipe.html>.
+
+How do you pass the left-hand operand as the *second* argument to the
+right-hand side?
+
+Give an example of computing the logarithm of 3, base 10, where you use the
+pipe to pass `10` as the argument for `base`.
+
+**YOUR ANSWER GOES HERE:**
+```{r}
+library("dplyr")
+3 %>% log(10)
+```

@@ -1,0 +1,216 @@
+---
+title: "STAT 33A Homework 1"
+date: "Sep 10, 2020"
+author: "CJ HINES (3034590053)"
+output: pdf_document
+---
+
+This homework is due __Sep 10, 2020__ by 11:59pm PT.
+
+Homeworks are graded for correctness. 
+
+As you work, write your answers in this notebook. Answer questions with
+complete sentences, and put code in code chunks. You can make as many new code
+chunks as you like.
+
+Please do not delete the exercises already in this notebook, because it may
+interfere with our grading tools.
+
+You need to submit your work in two places:
+
+* Submit this Rmd file with your edits on bCourses.
+* Knit and submit the generated PDF file on Gradescope.
+
+
+## Exercise 1
+
+For each function below, state whether the function is vectorized and provide a
+code example to support your claim.
+
+1. `median()`
+2. `exp()`
+3. `^`
+4. `nchar()`
+5. `sd()`
+
+YOUR ANSWER GOES HERE:
+
+1. Not vectorized (Ex. `median(c(1,2,3,4,4))`)
+2. Vectorized (Ex. `exp(c(1,2,3,4,5))`)
+3. Vectorized (Ex. `c(1,2,3)^6`)
+4. Vectorized (Ex. `nchar(c("hi","my","name","lithuania"))`)
+5. Not Vectorized (Ex. `sd(c(3,4,5,6))`)
+
+
+## Exercise 2
+
+Note: In R Markdown formatting, a dollar sign `$` marks the beginning of a
+(LaTeX) mathematical expression. For example, to format a linear equation
+nicely, you can write $ax + b = 0$. You don't need to know LaTeX for this
+class, so if you don't understand something written inside `$`, knit the PDF
+and read that instead.
+
+The `curve()` function plots a curve based on an expression. The basic syntax
+is `curve(expr, from, to)` where `from` and `to` are the limits of the x-axis.
+
+For example, to plot $x^2$ between 0 and 3:
+```{r}
+curve(x^2, 0, 3)
+```
+
+The `curve()` function makes it possible to use R as a graphing calculator.
+
+For each expression below:
+
+1. Plot the expression so that all points where it is 0 are visible. Experiment
+   to find appropriate limits for the x-axis.
+
+2. At which point(s) is the expression zero? Estimate (within 1 unit) based on
+   your plot rather than computing these mathematically.
+
+Here are the expressions:
+
+1. $5x - 1$
+2. $3x^2 - 2x - 8$
+3. $\sqrt{3x} - 4$
+
+YOUR ANSWER GOES HERE:
+
+1. Plot $5x - 1$.
+2. The expression is zero at x = 1/5.
+```{r}
+curve(5*x-1, -5, 5)
+```
+
+1. Plot $3x^2 - 2x - 8$
+2. The expression is zero at x = -1, 2.
+```{r}
+curve(3*x^2-2*x-8, -3, 3)
+```
+
+1. Plot $\sqrt{3x} - 4$
+2. The expression is zero at x = 16/3.
+```{r}
+curve(sqrt(3*x)-4, -2, 20)
+```
+
+
+## Exercise 3
+
+The quadratic formula is a straightfoward way to find the solutions to a
+quadratic equation $ax^2 + bx + c = 0$. You can view the formula and read more
+about it [here](https://en.wikipedia.org/wiki/Quadratic_formula).
+
+The goal of this exercise is to implement the quadratic formula in R. You'll
+use variables so that the code is reusable.
+
+1. Create R variables `a`, `b`, and `c` that correspond to the coefficients in
+   the quadratic equation $x^2 - 16 = 0$.
+
+The quadratic formula computes two different values, depending on whether you
+add or subtract the radical. We'll call these the "plus" and "minus" solutions.
+
+2. Use R to compute the "plus" solution of the quadratic formula for the
+   variables you created in step 1. Make sure to **use the variables**, not
+   hard-coded numbers.
+
+   Assign the result to a variable named `plus`.
+
+3. Use R to check that the computed `plus` solution is in fact a solution. In
+   other words, use R to compute the value of $ax^2 + bx + c$ for $x$ equal to
+   `plus`. Once again, make sure to **use the variables** from step 1 and 2,
+   not hard-coded numbers.
+
+4. Repeat steps 2-3 for the "minus" solution. This time, name the step 2
+   variable `minus`.
+
+   What are the two solutions?
+
+5. Now compute solutions for $3x^2 - 2x - 8 = 0$. Copy and paste your code
+   from steps 1-4 into a new code chunk. In the copied code, edit the values of
+   `a`, `b`, and `c` in step 1. Do not edit the code for any other step.
+
+   Run your code line-by-line to check that it still produces the correct
+   solutions.
+
+   What are the two solutions?
+
+
+YOUR ANSWER GOES HERE:
+
+1. Create R variables `a`, `b`, and `c` that correspond to the coefficients in the quadratic equation $x^2 - 16 = 0$.
+```{r}
+a = 1
+b = 0
+c = -16
+```
+2. Compute the "plus" solution of the quadratic formula.
+```{r}
+plus = (-b + sqrt(b^2-4*a*c)) / (2*a)
+```
+3. Check that the computed `plus` solution is in fact a solution. 
+```{r}
+a*plus^2 + b*plus + c == 0
+```
+4. Compute the "minus" solution of the quadratic formula.
+```{r}
+minus = (-b - sqrt(b^2-4*a*c)) / (2*a)
+```
+Check that the computed `minus` solution is in fact a solution. 
+```{r}
+a*minus^2 + b*minus + c == 0
+```
+5. Now compute solutions for $3x^2 - 2x - 8 = 0$. Copy and paste your code from steps 1-4 into a new code chunk. In the copied code, edit the values of  `a`, `b`, and `c`. Run your code line-by-line to check that it still produces the correct solutions. What are the two solutions?
+```{r}
+a = 3
+b = -2
+c = -8
+plus = (-b + sqrt(b^2-4*a*c)) / (2*a)
+a*plus^2 + b*plus + c == 0
+minus = (-b - sqrt(b^2-4*a*c)) / (2*a)
+a*minus^2 + b*minus + c == 0
+plus
+minus
+```
+
+## Exercise 4
+
+1. Are all of the functions and operators you used in step 2 of Exercise 3
+   vectorized?
+
+2. Is the code you wrote for step 2 of Exercise 3 vectorized in the variables
+   `a`, `b`, and `c`? Give an example to justify your argument.
+
+   _Hint: what happens if `a`, `b`, and `c` are vectors?_
+
+YOUR ANSWER GOES HERE:
+
+1. Yes all the functions and operators (sqrt, +, -, *, /) for plus are vectorized.
+2. Yes. 
+
+> Example #1
+```{r}
+a = c(2,2)
+b = c(5,5)
+c = c(2,2)
+plus = (-b + sqrt(b^2-4*a*c)) / (2*a)
+a*plus^2 + b*plus + c == 0
+minus = (-b - sqrt(b^2-4*a*c)) / (2*a)
+a*minus^2 + b*minus + c == 0
+plus
+minus
+```
+
+> Example #2. Sometimes it would return NaN values because it would sqrt a negative.
+```{r}
+a = c(5,9)
+b = c(9,10)
+c = c(4,7)
+plus = (-b + sqrt(b^2-4*a*c)) / (2*a)
+a*plus^2 + b*plus + c == 0
+minus = (-b - sqrt(b^2-4*a*c)) / (2*a)
+a*minus^2 + b*minus + c == 0
+plus
+minus
+```
+

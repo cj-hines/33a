@@ -1,0 +1,221 @@
+---
+title: "STAT 33A Homework 7"
+date: "Dec 10, 2020"
+author: "CJ HINES (3034590053)"
+output: pdf_document
+---
+
+This homework is due __Dec 10, 2020__ by 11:59pm PT.
+
+Homeworks are graded for correctness. 
+
+As you work, write your answers in this notebook. Answer questions with
+complete sentences, and put code in code chunks. You can make as many new code
+chunks as you like.
+
+Please do not delete the exercises already in this notebook, because it may
+interfere with our grading tools.
+
+You need to submit your work in two places:
+
+* Submit this Rmd file with your edits on bCourses.
+* Knit and submit the generated PDF file on Gradescope.
+
+If you have any last-minute trouble knitting, **DON'T PANIC**. Submit your Rmd
+file on time and follow up in office hours or on Piazza to sort out the PDF.
+
+
+SpamAssassin Email Data
+=======================
+
+The SpamAssassin Email Data set is a collection of email messages used to train
+the SpamAssassin software to detect spam. The email messages are divided into
+legitimate "ham" emails and illegitimate "spam" emails. Each email is in a
+separate plain text file.
+
+In this assignment, you'll only use a collection of "ham" emails. You can find
+the emails in the file `emails.zip` on the bCourse. You will need to unzip the
+file before proceeding with Exercise 1.
+
+This data set is originally from the
+[Apache SpamAssassin](https://spamassassin.apache.org/) project.
+
+
+## Exercise 1
+
+The `readLines` function reads lines of text from a file and returns them in a
+character vector with one element for each line. The first argument is the path
+to the file. By default, the function will read all of the lines in the file.
+
+Write a function `read_email` that reads all of the text in a single email
+file. Your function should have a parameter `file` to set the path to the file.
+Your function should collapse all of the lines in the file into a single string
+with lines separated by the newline character `\n`.
+
+Show that your function works for 3 of the email files.
+
+_Hint: The `paste` function is relevant here._
+
+**YOUR ANSWER GOES HERE:**
+```{r}
+read_email = function(file) {
+  paste(readLines(file), collapse = "\n")
+}
+
+#Tests
+t1 = read_email("easy_ham/0001.ea7e79d3153e7469e7a9c3e0af6a357e")
+t2 = read_email("easy_ham/0002.b3120c4bcbf3101e661161ee7efcb8bf")
+t3 = read_email("easy_ham/0559.2c60829e4147cdc981cf7131088b851d")
+head(t1)
+```
+
+## Exercise 2
+
+Write a function `read_email_all` that reads all of the files in the email
+directory and returns a character vector with one element for each email. Your
+function should have a parameter `dir` to set the path to the directory. Your
+function should call the `read_email` function from Exercise 1.
+
+Make sure not to put other files in the email directory!
+
+After writing your function, use it to read all of the email files into a
+character vector called `emails`.
+
+How many email files are there?
+
+_Hint: The `list.files` function is relevant here._
+
+**YOUR ANSWER GOES HERE:**
+```{r}
+read_email_all = function(dir) {
+  emails = character(length(list.files(dir())))
+  sapply(list.files(dir, full.names = TRUE), read_email)
+}
+
+emails = read_email_all("easy_ham")
+length(emails)
+```
+
+> There are 2551 email files.
+
+
+## Exercise 3
+
+Use stringr and regular expressions to write a function `extract_email_addr`
+that extracts all email addresses from a character vector. Your function should
+have a parameter `x` for the character vector, and should return a character
+vector with one element for each email address (duplicates are okay).
+
+For simplicity, you can assume the formatting rules for email addresses are
+that they:
+
+1. Must contain exactly one at-symbol `@`
+2. Can also contain any number of letters, numbers, or characters in `._-`
+
+Test your function on some made up strings and also on one of the email
+messages.
+
+_Hint: Using character classes `[ ]` in the regex pattern is important here._
+
+_Note: It's not necessary for this exercise, but if you're curious about the
+actual rules for email addresses, see
+[Section 3.4.1 of RFC 5322](https://tools.ietf.org/html/rfc5322#section-3.4.1),
+or [this Wikipedia article](https://en.wikipedia.org/wiki/Email_address)._
+
+**YOUR ANSWER GOES HERE:**
+```{r}
+library(stringr)
+
+extract_email_addr = function(x) {
+  addresses = str_extract_all(x, "[[:alnum:]]+@[[:alpha:]]+\\.[[:alpha:]]+")
+  return(addresses) 
+}
+
+#Tests
+realtest = extract_email_addr(emails[5])
+realtest
+
+faketest = extract_email_addr("i love starman by david bowie pugliese@italy.org and hello
+                              walls by willie nelson blahblahblah disneyworld
+                              willienelson@gmail.com pumpkinpieeeee!! #woo")
+faketest
+
+emptytest = extract_email_addr("?? there are no emails in this test @ 
+                               owahhhh whole wheat bread")
+emptytest
+```
+
+
+## Exercise 4
+
+Using your `extract_email_addr` function and the email message data:
+
+1. How many different email addresses appear in the emails?
+2. Which 5 email addresses appear the most?
+
+**YOUR ANSWER GOES HERE:**
+```{r}
+alladdresses = extract_email_addr(emails)
+
+unlistedaddresses = unlist(alladdresses)
+
+numunlisted = length(unlistedaddresses)
+numunique = unique(unlistedaddresses)
+
+#how many all emails
+numunlisted
+
+#how many different emails
+length(numunique)
+
+head(sort(table(unlistedaddresses), decreasing = TRUE))
+```
+
+> There are 2469 different email addresses in the emails.
+
+> The 5 email addresses that appear the most are:
+
+1. admin@xent.com
+2. fork@example.com
+3. request@xent.com
+4. yyyy@localhost.example
+5. jm@jmason.org
+
+
+## Exercise 5
+
+The part of an email address after the `@` is called the _domain_. The domain
+refers to a website, so it usually contains at least one dot. For example, Cal
+email addresses use the domain `berkeley.edu`, which is also the Cal website
+address.
+
+Which 10 domains are the most common among the email addresses you extracted
+from the email data?
+
+How many domains in the email addresses end in `.edu`?
+
+**YOUR ANSWER GOES HERE:**
+```{r}
+domains = str_extract_all(unlistedaddresses, "@+[[:alpha:]]+\\.[[:alpha:]]+")
+head(sort(table(unlist(domains)), decreasing = TRUE))
+
+domains2 = domains[which(str_detect(domains, (".edu")) == TRUE)]
+edudomains = unique(unlist(domains2))
+edudomains
+length(edudomains)
+```
+
+> The top 10 most commons domains are: 
+
+1. @example.com
+2. @xent.com
+3. @freshrpms.net 
+4. @jmason.org
+5. @example.sourceforge
+6. @localhost.example 
+7. @lists.sourceforge
+8. @redhat.com
+9. @linux.ie 
+10. @yahoogroups.com
+
+> There are 8 email addresses that end in `.edu`.
